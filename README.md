@@ -22,7 +22,7 @@ Repository được sử dụng để:
 
 Tùy theo từng dự án, nhóm sử dụng các công nghệ như:
 
-* Flutter (Mobile Development)
+* Flutter 
 * Java / Spring Boot
 * PHP / MySQL
 * Python
