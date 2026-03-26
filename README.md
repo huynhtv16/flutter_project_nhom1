@@ -1,4 +1,4 @@
-# 🚀 Nhóm 1 - Kho lưu trữ dự án cá nhân
+# 🚀 Nhóm 1 - Kho lưu trữ dự án cá nhân - Dự án: Xây dựng ứng dụng học từ vựng tiếng Anh
 
 ## 👥 Thành viên nhóm
 
