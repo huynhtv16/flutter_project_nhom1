@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Máy tính lãi suất',
+      title: 'Máy tính lãi suất hàng năm',
       home: const InterestCalculator(),
     );
   }
