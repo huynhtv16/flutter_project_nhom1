@@ -1,4 +1,4 @@
-# 🚀 Nhóm 1 - Kho lưu trữ dự án cá nhân - Dự án: Xây dựng ứng dụng học từ vựng tiếng Anh
+# 🚀 Nhóm 1 - Kho lưu trữ dự án cá nhân 
 
 ## 👥 Thành viên nhóm
 
@@ -20,12 +20,9 @@ Repository được sử dụng để:
 
 ## 🛠️ Công nghệ sử dụng
 
-Tùy theo từng dự án, nhóm sử dụng các công nghệ như:
+Nhóm sử dụng các công nghệ như:
 
 * Flutter 
-* Java / Spring Boot
-* PHP / MySQL
-* Python
 
 ---
 
