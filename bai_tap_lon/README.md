@@ -1,17 +1,10 @@
 # bai_tap_lon
+// trang chu
+<img width="589" height="799" alt="image" src="https://github.com/user-attachments/assets/93a8472d-d48d-459f-948b-86680b00bb1e" />
 
-A new Flutter project.
+// AI assesment
+<img width="589" height="799" alt="image" src="https://github.com/user-attachments/assets/c1e83059-ce7c-4ea9-bdb0-ba9e1b2534bb" />
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
