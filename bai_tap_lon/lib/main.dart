@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         '/quiz': (context) => const QuizScreen(),
         '/listening': (context) => const ListeningScreen(),
         '/assessment': (context) => const AssessmentScreen(),
-        '/learning_path': (context) => const LearningPathScreen(),
+
       },
     );
   }

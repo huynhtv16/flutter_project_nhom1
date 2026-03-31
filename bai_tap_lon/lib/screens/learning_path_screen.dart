@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
 class LearningPathScreen extends StatelessWidget {
-  const LearningPathScreen({super.key});
+  final int score; // ✅ nhận score từ ngoài
+
+  const LearningPathScreen({
+    super.key,
+    required this.score, // ✅ bắt buộc truyền vào
+  });
 
   @override
   Widget build(BuildContext context) {
-    final int score = ModalRoute.of(context)!.settings.arguments as int;
+
     String level;
     List<String> recommendations;
 
@@ -98,7 +103,7 @@ class LearningPathScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/');
+                    Navigator.pop(context);
                   },
                   child: const Text('Start Learning'),
                 ),

@@ -1,45 +1,158 @@
 import 'package:flutter/material.dart';
 
+// IMPORT SCREEN
+import 'vocabulary_screen.dart';
+import 'listening_screen.dart';
+import 'quiz_screen.dart';
+import 'assessment_screen.dart';
+import 'learning_path_screen.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+  final int score = 3; // sau này lấy từ quiz
 
-  Widget buildMenuItem(BuildContext context, IconData icon, String title, Color color, String routeName) {
+  // ===== FULL ITEM =====
+  Widget buildFullItem(
+      BuildContext context,
+      IconData icon,
+      String title,
+      Color color,
+      Widget screen,
+      ) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => screen),
+      ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.2),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 30, color: color),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===== SMALL ITEM =====
+  Widget buildSmallItem(
+      BuildContext context,
+      IconData icon,
+      String title,
+      Color color,
+      Widget screen,
+      ) {
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-          Navigator.pushNamed(context, routeName);
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => screen),
+        ),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.all(8),
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          margin: const EdgeInsets.all(6),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
                 color: color.withOpacity(0.2),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
+                blurRadius: 10,
+              )
             ],
-            border: Border.all(color: color.withOpacity(0.3), width: 1),
+            border: Border.all(color: color.withOpacity(0.3)),
           ),
           child: Column(
             children: [
-              Icon(icon, size: 50, color: color),
-              const SizedBox(height: 12),
+              Icon(icon, color: color, size: 30),
+              const SizedBox(height: 6),
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                  letterSpacing: 0.5,
-                ),
+                style: TextStyle(color: color),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // ===== COURSE ITEM =====
+  Widget buildCourseItem(BuildContext context, String title) {
+    return GestureDetector(
+      onTap: () {
+        // Bạn có thể sửa sang màn course riêng nếu có
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.95),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+            )
+          ],
+        ),
+        child: Row(
+          children: [
+            const CircleAvatar(
+              backgroundColor: Color(0xFF4CAF50),
+              child: Icon(Icons.school, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+            Container(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                "VIP",
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -49,14 +162,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Trang chủ",
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 24,
-            letterSpacing: 1.2,
-          ),
-        ),
+        title: const Text("Trang chủ"),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -64,12 +170,11 @@ class HomePage extends StatelessWidget {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xFFE3F2FD), Color(0xFFBBDEFB)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
             ),
           ),
         ),
       ),
+
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -78,174 +183,145 @@ class HomePage extends StatelessWidget {
             end: Alignment.bottomCenter,
           ),
         ),
+
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // Welcome Section
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.lightbulb_outline,
-                        size: 60,
-                        color: Color(0xFF4CAF50),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "Chào mừng bạn đến với\nỨng dụng Học Tiếng Anh",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2E7D32),
-                          height: 1.3,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Học tập một cách thư giãn và hiệu quả mỗi ngày",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                // Stats Card
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Colors.white, Color(0xFFF8F9FA)],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4CAF50).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Icon(
-                          Icons.trending_up,
-                          size: 32,
-                          color: Color(0xFF4CAF50),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Tiến độ học tập",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              "120 từ đã học",
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: Color(0xFF2E7D32),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                // Menu Title
-                const Text(
-                  "Chọn hoạt động học tập",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF424242),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Menu Grid
-                Row(
-                  children: [
-                    buildMenuItem(context, Icons.book, "Từ vựng", const Color(0xFFFF9800), '/vocabulary'),
-                    buildMenuItem(context, Icons.headphones, "Luyện nghe", const Color(0xFF4CAF50), '/listening'),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    buildMenuItem(context, Icons.edit, "Bài tập", const Color(0xFF9C27B0), '/quiz'),
-                    buildMenuItem(context, Icons.smart_toy, "AI Assessment", const Color(0xFFE91E63), '/assessment'),
-                  ],
-                ),
-                const SizedBox(height: 40),
-                // Motivational Quote
+
+                // ===== WELCOME =====
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withOpacity(0.5)),
+                    color: Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Column(
                     children: [
-                      Icon(
-                        Icons.format_quote,
-                        size: 32,
-                        color: Color(0xFF9E9E9E),
-                      ),
-                      SizedBox(height: 12),
+                      Icon(Icons.lightbulb, size: 50, color: Colors.green),
+                      SizedBox(height: 10),
                       Text(
-                        "\"Học tập là chìa khóa mở ra cánh cửa tương lai\"",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontStyle: FontStyle.italic,
-                          color: Color(0xFF616161),
-                          fontWeight: FontWeight.w500,
-                        ),
+                        "Chào mừng bạn",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ===== STATS =====
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.trending_up, color: Colors.green),
+                      SizedBox(width: 10),
+                      Text("120 từ đã học"),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ===== MENU =====
+                buildFullItem(
+                  context,
+                  Icons.book,
+                  "Từ vựng",
+                  Colors.orange,
+                  const VocabularyScreen(),
+                ),
+
+                Row(
+                  children: [
+                    buildSmallItem(
+                      context,
+                      Icons.headphones,
+                      "Luyện nghe",
+                      Colors.green,
+                      const ListeningScreen(),
+                    ),
+                    buildSmallItem(
+                      context,
+                      Icons.edit,
+                      "Bài tập",
+                      Colors.purple,
+                      const QuizScreen(),
+                    ),
+                  ],
+                ),
+
+                buildFullItem(
+                  context,
+                  Icons.smart_toy,
+                  "AI Assessment",
+                  Colors.pink,
+                  const AssessmentScreen(),
+                ),
+
+                buildFullItem(
+                  context,
+                  Icons.map,
+                  "Lộ trình học",
+                  Colors.blue,
+                  LearningPathScreen(score: score),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ===== COURSE LIST =====
+                ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    buildCourseItem(context, "Toeic 450+"),
+                    buildCourseItem(context, "Giao tiếp"),
+                    buildCourseItem(context, "IELTS"),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                // ===== QUOTE =====
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    "\"Học tập là chìa khóa thành công\"",
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+
+      // ===== BOTTOM NAV =====
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: const [
+            Icon(Icons.home),
+            Icon(Icons.school),
+            Icon(Icons.person),
+            Icon(Icons.settings),
+          ],
         ),
       ),
     );
