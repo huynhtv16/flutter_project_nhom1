@@ -5,6 +5,8 @@ import 'screens/quiz_screen.dart';
 import 'screens/listening_screen.dart';
 import 'screens/assessment_screen.dart';
 import 'screens/learning_path_screen.dart';
+import 'screens/account_screen.dart';
+import 'screens/final_test_screen.dart';
 import 'auth/login_screen.dart';
 import 'auth/register_screen.dart';
 
@@ -34,7 +36,8 @@ class MyApp extends StatelessWidget {
         '/quiz': (context) => const QuizScreen(),
         '/listening': (context) => const ListeningScreen(),
         '/assessment': (context) => const AssessmentScreen(),
-
+        '/account': (context) => const AccountScreen(),
+        '/final-test': (context) => const FinalTestScreen(),
       },
     );
   }
