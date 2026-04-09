@@ -1,7 +1,42 @@
 import 'package:flutter/material.dart';
 
-class ListeningScreen extends StatelessWidget {
+class ListeningScreen extends StatefulWidget {
   const ListeningScreen({super.key});
+
+  @override
+  State<ListeningScreen> createState() => _ListeningScreenState();
+}
+
+class _ListeningScreenState extends State<ListeningScreen> {
+  final List<Conversation> conversations = [
+    Conversation(
+      id: 1,
+      title: "At the Restaurant",
+      description: "Sarah và Mike đặt món ăn trong nhà hàng",
+      duration: "2:45",
+      level: "Beginner",
+      audioUrl: "",
+      transcript: "Waiter: Good evening. Do you have a reservation?\nSarah: Yes, under the name Smith.\n...",
+    ),
+    Conversation(
+      id: 2,
+      title: "Asking for Directions",
+      description: "Tom hỏi đường đến ga tàu điện ngầm",
+      duration: "3:10",
+      level: "Elementary",
+      audioUrl: "",
+      transcript: "Excuse me, how do I get to the subway station?\n...",
+    ),
+    Conversation(
+      id: 3,
+      title: "Daily Routine",
+      description: "Hai bạn nói về thói quen hàng ngày",
+      duration: "4:05",
+      level: "Intermediate",
+      audioUrl: "",
+      transcript: "...",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +50,7 @@ class ListeningScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Động Vật",
+          "Luyện Nghe Hội Thoại",
           style: TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
@@ -26,49 +61,39 @@ class ListeningScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 0.85, // điều chỉnh để card cao hơn một chút
-          children: const [
-            VocabularyCard(
-              emoji: "🐻",
-              phonetic: "/beər/",
-              word: "bear",
-              meaning: "Con gấu",
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Chọn bài hội thoại để luyện nghe",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
-            VocabularyCard(
-              emoji: "🐱",
-              phonetic: "/kæt/",
-              word: "cat",
-              meaning: "Con mèo",
+            const SizedBox(height: 8),
+            const Text(
+              "Nghe và hiểu câu chuyện thật tế",
+              style: TextStyle(color: Colors.grey),
             ),
-            VocabularyCard(
-              emoji: "🐘",
-              phonetic: "/ˈelɪfənt/",
-              word: "elephant",
-              meaning: "Con voi",
+            const SizedBox(height: 20),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: conversations.length,
+                itemBuilder: (context, index) {
+                  final conv = conversations[index];
+                  return ConversationCard(
+                    conversation: conv,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ConversationPlayerScreen(conversation: conv),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-            VocabularyCard(
-              emoji: "🦊",
-              phonetic: "/fɒks/",
-              word: "fox",
-              meaning: "Con cáo",
-            ),
-            VocabularyCard(
-              emoji: "🦒",
-              phonetic: "/dʒɪˈrɑːf/",
-              word: "giraffe",
-              meaning: "Con hươu cao cổ",
-            ),
-            VocabularyCard(
-              emoji: "🦛",
-              phonetic: "/ˌhɪpəˈpɒtəməs/",
-              word: "hippopotamus",
-              meaning: "Con hà mã",
-            ),
-            // Bạn có thể thêm nhiều card nữa nếu cần
           ],
         ),
       ),
@@ -76,115 +101,262 @@ class ListeningScreen extends StatelessWidget {
   }
 }
 
-class VocabularyCard extends StatelessWidget {
-  final String emoji;
-  final String phonetic;
-  final String word;
-  final String meaning;
+// ====================== CARD HỘI THOẠI ======================
+class ConversationCard extends StatelessWidget {
+  final Conversation conversation;
+  final VoidCallback onTap;
 
-  const VocabularyCard({
+  const ConversationCard({
     super.key,
-    required this.emoji,
-    required this.phonetic,
-    required this.word,
-    required this.meaning,
+    required this.conversation,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (_) => VocabularyDialog(
-            emoji: emoji,
-            phonetic: phonetic,
-            word: word,
-            meaning: meaning,
-          ),
-        );
-      },
+      onTap: onTap,
       child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFE0F0FF), // nền card nhạt giống ảnh
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFFFFD700), // viền vàng
-            width: 2.5,
-          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),   // ← Đã sửa
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
           children: [
-            const SizedBox(height: 12),
-            // Icon lớn
-            Text(
-              emoji,
-              style: const TextStyle(fontSize: 52),
-            ),
-            const SizedBox(height: 12),
-
-            // Từ tiếng Anh
-            Text(
-              word,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: const Color(0xFF4A90E2).withValues(alpha: 0.1), // ← Đã sửa
+                borderRadius: BorderRadius.circular(12),
               ),
-              textAlign: TextAlign.center,
-            ),
-
-            // Phiên âm
-            Text(
-              phonetic,
-              style: const TextStyle(
-                fontSize: 13.5,
-                color: Colors.grey,
-                fontWeight: FontWeight.w500,
+              child: const Icon(
+                Icons.headphones_rounded,
+                size: 32,
+                color: Color(0xFF4A90E2),
               ),
             ),
+            const SizedBox(width: 16),
 
-            const SizedBox(height: 12),
-
-            // Hai nút nhỏ (quả táo + loa)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Nút quả táo (có thể là nút ghi âm hoặc kiểm tra)
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.orangeAccent),
-                    ),
-                    child: const Icon(
-                      Icons.apple, // hoặc thay bằng icon khác nếu muốn
-                      size: 22,
-                      color: Colors.orange,
-                    ),
+                  Text(
+                    conversation.title,
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
-                  // Nút loa
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.blueAccent),
-                    ),
-                    child: const Icon(
-                      Icons.volume_up_rounded,
-                      size: 22,
-                      color: Color(0xFF4A90E2),
-                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                    conversation.description,
+                    style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildTag(conversation.level),
+                      const SizedBox(width: 12),
+                      Text(
+                        "⏱ ${conversation.duration}",
+                        style: const TextStyle(fontSize: 13, color: Colors.grey),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+
+            const Icon(Icons.play_circle_fill, size: 36, color: Color(0xFF4A90E2)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTag(String level) {
+    Color color = level == "Beginner"
+        ? Colors.green
+        : level == "Elementary"
+        ? Colors.orange
+        : Colors.purple;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),        // ← Đã sửa
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        level,
+        style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+// ====================== MÀN HÌNH NGHE CHI TIẾT ======================
+class ConversationPlayerScreen extends StatefulWidget {
+  final Conversation conversation;
+
+  const ConversationPlayerScreen({super.key, required this.conversation});
+
+  @override
+  State<ConversationPlayerScreen> createState() => _ConversationPlayerScreenState();
+}
+
+class _ConversationPlayerScreenState extends State<ConversationPlayerScreen> {
+  bool isPlaying = false;
+  bool showTranscript = true;
+  double progress = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.conversation.title),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Container(
+              height: 180,
+              decoration: BoxDecoration(
+                color: const Color(0xFF4A90E2).withValues(alpha: 0.1), // ← Đã sửa
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Center(
+                child: Icon(Icons.record_voice_over, size: 100, color: Color(0xFF4A90E2)),
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            Text(
+              widget.conversation.title,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.conversation.description,
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+
+            const SizedBox(height: 40),
+
+            // Audio Player
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08), // ← Đã sửa
+                    blurRadius: 15,
+                  )
+                ],
+              ),
+              child: Column(
+                children: [
+                  Slider(
+                    value: progress,
+                    onChanged: (value) => setState(() => progress = value),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("0:00"),
+                      Text(widget.conversation.duration),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        iconSize: 48,
+                        icon: const Icon(Icons.replay_10),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        iconSize: 72,
+                        icon: Icon(isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled),
+                        color: const Color(0xFF4A90E2),
+                        onPressed: () => setState(() => isPlaying = !isPlaying),
+                      ),
+                      IconButton(
+                        iconSize: 48,
+                        icon: const Icon(Icons.forward_10),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Bản ghi lời thoại", style: TextStyle(fontWeight: FontWeight.w600)),
+                TextButton(
+                  onPressed: () => setState(() => showTranscript = !showTranscript),
+                  child: Text(showTranscript ? "Ẩn" : "Hiện"),
+                ),
+              ],
+            ),
+
+            if (showTranscript)
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      widget.conversation.transcript,
+                      style: const TextStyle(fontSize: 15, height: 1.5),
+                    ),
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 16),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Tính năng kiểm tra hiểu đang phát triển...")),
+                );
+              },
+              icon: const Icon(Icons.quiz),
+              label: const Text("Kiểm tra hiểu bài"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 52),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
           ],
         ),
       ),
@@ -192,66 +364,23 @@ class VocabularyCard extends StatelessWidget {
   }
 }
 
-// Dialog khi nhấn vào card (giữ nguyên hoặc chỉnh nhẹ nếu cần)
-class VocabularyDialog extends StatelessWidget {
-  final String emoji;
-  final String phonetic;
-  final String word;
-  final String meaning;
+// Model
+class Conversation {
+  final int id;
+  final String title;
+  final String description;
+  final String duration;
+  final String level;
+  final String audioUrl;
+  final String transcript;
 
-  const VocabularyDialog({
-    super.key,
-    required this.emoji,
-    required this.phonetic,
-    required this.word,
-    required this.meaning,
+  Conversation({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.duration,
+    required this.level,
+    required this.audioUrl,
+    required this.transcript,
   });
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const CircleAvatar(
-                  radius: 14,
-                  backgroundColor: Colors.redAccent,
-                  child: Icon(Icons.close, size: 16, color: Colors.white),
-                ),
-              ),
-            ),
-            Text(emoji, style: const TextStyle(fontSize: 80)),
-            const SizedBox(height: 12),
-            Text(word, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            Text(phonetic, style: const TextStyle(color: Colors.grey, fontSize: 15)),
-            const SizedBox(height: 16),
-            Text(meaning, style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Đang phát âm: $word')),
-                );
-              },
-              icon: const Icon(Icons.volume_up),
-              label: const Text("Nghe"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4A90E2),
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

@@ -6,6 +6,7 @@ import 'listening_screen.dart';
 import 'quiz_screen.dart';
 import 'assessment_screen.dart';
 import 'learning_path_screen.dart';
+import '../auth/login_screen.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -173,8 +174,43 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ),
-      ),
 
+      actions: [
+        // Nút Đăng xuất
+        IconButton(
+          icon: const Icon(Icons.logout, color: Colors.redAccent),
+          tooltip: "Đăng xuất",
+          onPressed: () {
+            // Hiển thị xác nhận trước khi đăng xuất
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Đăng xuất"),
+                content: const Text("Bạn có chắc muốn đăng xuất không?"),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Hủy"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // đóng dialog
+                      // Chuyển về màn hình Login và xóa hết lịch sử
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                            (route) => false,
+                      );
+                    },
+                    child: const Text("Đăng xuất", style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

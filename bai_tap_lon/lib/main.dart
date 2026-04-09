@@ -5,6 +5,8 @@ import 'screens/quiz_screen.dart';
 import 'screens/listening_screen.dart';
 import 'screens/assessment_screen.dart';
 import 'screens/learning_path_screen.dart';
+import 'auth/login_screen.dart';
+import 'auth/register_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,6 +28,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
         '/vocabulary': (context) => const VocabularyScreen(),
         '/quiz': (context) => const QuizScreen(),
         '/listening': (context) => const ListeningScreen(),
