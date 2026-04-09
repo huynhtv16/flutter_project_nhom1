@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class VocabularyScreen extends StatelessWidget {
   const VocabularyScreen({super.key});
@@ -58,7 +59,7 @@ class VocabularyScreen extends StatelessWidget {
 }
 
 // ====================== VocabularyCard ======================
-class VocabularyCard extends StatelessWidget {
+class VocabularyCard extends StatefulWidget {
   final String emoji;
   final String phonetic;
   final String word;
@@ -72,11 +73,17 @@ class VocabularyCard extends StatelessWidget {
     required this.meaning,
   });
 
+  @override
+  State<VocabularyCard> createState() => _VocabularyCardState();
+}
+
+class _VocabularyCardState extends State<VocabularyCard> {
+  final FlutterTts flutterTts = FlutterTts();
+
   void speak(String text) async {
-    final player = AudioPlayer();
-    final url =
-        "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=$text";
-    await player.play(UrlSource(url));
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(text);
   }
 
   @override
@@ -86,10 +93,10 @@ class VocabularyCard extends StatelessWidget {
         showDialog(
           context: context,
           builder: (_) => VocabularyDialog(
-            emoji: emoji,
-            phonetic: phonetic,
-            word: word,
-            meaning: meaning,
+            emoji: widget.emoji,
+            phonetic: widget.phonetic,
+            word: widget.word,
+            meaning: widget.meaning,
           ),
         );
       },
@@ -106,10 +113,10 @@ class VocabularyCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 12),
-            Text(emoji, style: const TextStyle(fontSize: 52)),
+            Text(widget.emoji, style: const TextStyle(fontSize: 52)),
             const SizedBox(height: 12),
             Text(
-              word,
+              widget.word,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -117,9 +124,9 @@ class VocabularyCard extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            if (phonetic.isNotEmpty)
+            if (widget.phonetic.isNotEmpty)
               Text(
-                phonetic,
+                widget.phonetic,
                 style: const TextStyle(
                   fontSize: 13.5,
                   color: Colors.grey,
@@ -150,7 +157,7 @@ class VocabularyCard extends StatelessWidget {
 
                   // Speaker icon
                   GestureDetector(
-                    onTap: () => speak(word),
+                    onTap: () => speak(widget.word),
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
@@ -177,7 +184,7 @@ class VocabularyCard extends StatelessWidget {
 }
 
 // ====================== VocabularyDialog ======================
-class VocabularyDialog extends StatelessWidget {
+class VocabularyDialog extends StatefulWidget {
   final String emoji;
   final String phonetic;
   final String word;
@@ -191,13 +198,17 @@ class VocabularyDialog extends StatelessWidget {
     required this.meaning,
   });
 
-  final AudioPlayer _player = AudioPlayer();
+  @override
+  State<VocabularyDialog> createState() => _VocabularyDialogState();
+}
+
+class _VocabularyDialogState extends State<VocabularyDialog> {
+  final FlutterTts flutterTts = FlutterTts();
 
   Future<void> speak(String text) async {
-    final url =
-        "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=$text";
-
-    await _player.play(UrlSource(url));
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(text);
   }
 
   @override
@@ -221,28 +232,28 @@ class VocabularyDialog extends StatelessWidget {
                 ),
               ),
             ),
-            Text(emoji, style: const TextStyle(fontSize: 80)),
+            Text(widget.emoji, style: const TextStyle(fontSize: 80)),
             const SizedBox(height: 12),
             Text(
-              word,
+              widget.word,
               style: const TextStyle(
                   fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            if (phonetic.isNotEmpty)
+            if (widget.phonetic.isNotEmpty)
               Text(
-                phonetic,
+                widget.phonetic,
                 style: const TextStyle(color: Colors.grey),
               ),
             const SizedBox(height: 16),
             Text(
-              meaning,
+              widget.meaning,
               style: const TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
 
             ElevatedButton.icon(
-              onPressed: () => speak(word),
+              onPressed: () => speak(widget.word),
               icon: const Icon(Icons.volume_up),
               label: const Text("Nghe"),
               style: ElevatedButton.styleFrom(
