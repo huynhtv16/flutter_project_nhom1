@@ -41,11 +41,20 @@
 
 ## 📸 Giao diện
 
-### 🏠 Trang chủ
-![Home](https://github.com/user-attachments/assets/93a8472d-d48d-459f-948b-86680b00bb1e)
+### Trang đăng nhập
+<img width="595" height="751" alt="image" src="https://github.com/user-attachments/assets/83781530-c3ea-470c-8178-a8810e9a5a08" />
 
-### 🤖 AI Assessment
-![AI Assessment](https://github.com/user-attachments/assets/c1e83059-ce7c-4ea9-bdb0-ba9e1b2534bb)
+### Trang chủ
+<img width="595" height="974" alt="image" src="https://github.com/user-attachments/assets/435c0f0c-525a-4bd1-ad11-c8b7dd9ca189" />
+
+### Trang từ vựng 
+<img width="595" height="974" alt="image" src="https://github.com/user-attachments/assets/f556a3ab-0f53-43c8-a50c-114c6be57344" />
+
+### Trang bài tập
+<img width="595" height="974" alt="image" src="https://github.com/user-attachments/assets/2a34023c-82ff-4efb-9af7-cba61aa4d68d" />
+
+### Chi tiết trang bài tập
+<img width="595" height="974" alt="image" src="https://github.com/user-attachments/assets/62c4da66-7a91-4c1b-97a0-a73b559d32f6" />
 
 ---
 
