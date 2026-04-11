@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/app_state.dart';
+import 'providers/auth_provider.dart';
+import 'providers/lesson_provider.dart';
+import 'providers/quiz_provider.dart';
+import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/vocabulary_screen.dart';
+import 'screens/lesson_list_screen.dart';
+import 'screens/lesson_detail_screen.dart';
 import 'screens/quiz_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/course_screen.dart';
+import 'screens/exercise_screen.dart';
 import 'screens/listening_screen.dart';
-import 'screens/assessment_screen.dart';
-import 'screens/learning_path_screen.dart';
-import 'screens/account_screen.dart';
-import 'screens/final_test_screen.dart';
-import 'auth/login_screen.dart';
-import 'auth/register_screen.dart';
+import 'screens/ai_assignment_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,26 +24,46 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'English Learning App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => LessonProvider()),
+        ChangeNotifierProvider(create: (_) => QuizProvider()),
+        ChangeNotifierProvider(create: (_) => AppState()),
+      ],
+      child: MaterialApp(
+        title: 'English Learning App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: const AuthWrapper(),
+        routes: {
+          '/home': (context) => const HomeScreen(),
+          '/lessons': (context) => const LessonListScreen(),
+          '/quiz': (context) => const QuizScreen(),
+          '/profile': (context) => const ProfileScreen(),
+          '/courses': (context) => const CourseScreen(),
+          '/exercises': (context) => const ExerciseScreen(),
+          '/listening': (context) => const ListeningScreen(),
+          '/ai': (context) => const AIAssignmentScreen(),
+        },
       ),
-      // Định nghĩa các trang trong ứng dụng
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomePage(),
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/vocabulary': (context) => const VocabularyScreen(),
-        '/quiz': (context) => const QuizScreen(),
-        '/listening': (context) => const ListeningScreen(),
-        '/assessment': (context) => const AssessmentScreen(),
-        '/account': (context) => const AccountScreen(),
-        '/final-test': (context) => const FinalTestScreen(),
-      },
     );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+
+    if (authProvider.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    return authProvider.isLoggedIn ? const HomeScreen() : const LoginScreen();
   }
 }

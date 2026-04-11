@@ -1,438 +1,247 @@
 import 'package:flutter/material.dart';
-
-// IMPORT SCREEN
-import 'vocabulary_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import '../providers/lesson_provider.dart';
+import '../providers/quiz_provider.dart';
+import 'course_screen.dart';
+import 'exercise_screen.dart';
 import 'listening_screen.dart';
+import 'lesson_list_screen.dart';
 import 'quiz_screen.dart';
-import 'assessment_screen.dart';
-import 'learning_path_screen.dart';
-import 'account_screen.dart';
-import 'final_test_screen.dart';
-import '../auth/login_screen.dart';
+import 'profile_screen.dart';
+import 'ai_assignment_screen.dart';
+import 'vocabulary_screen.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-  final int score = 3; // sau này lấy từ quiz
-
-  // ===== FULL ITEM =====
-  Widget buildFullItem(
-      BuildContext context,
-      IconData icon,
-      String title,
-      Color color,
-      Widget screen,
-      ) {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => screen),
-      ),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.2),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 30, color: color),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios, size: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ===== SMALL ITEM =====
-  Widget buildSmallItem(
-      BuildContext context,
-      IconData icon,
-      String title,
-      Color color,
-      Widget screen,
-      ) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => screen),
-        ),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.all(6),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.2),
-                blurRadius: 10,
-              )
-            ],
-            border: Border.all(color: color.withOpacity(0.3)),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 30),
-              const SizedBox(height: 6),
-              Text(
-                title,
-                style: TextStyle(color: color),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ===== COURSE ITEM =====
-  Widget buildCourseItem(BuildContext context, String title) {
-    return GestureDetector(
-      onTap: () {
-        // Bạn có thể sửa sang màn course riêng nếu có
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.95),
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
-            )
-          ],
-        ),
-        child: Row(
-          children: [
-            const CircleAvatar(
-              backgroundColor: Color(0xFF4CAF50),
-              child: Icon(Icons.school, color: Colors.white),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-            Container(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.orange,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                "VIP",
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _onTabTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load data when screen opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LessonProvider>().loadLessons();
+      context.read<QuizProvider>().loadQuizzes();
     });
-  }
-
-  Widget _buildHomeContent() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            // ===== WELCOME =====
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Column(
-                children: [
-                  Icon(Icons.lightbulb, size: 50, color: Colors.green),
-                  SizedBox(height: 10),
-                  Text(
-                    "Chào mừng bạn",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ===== STATS =====
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.trending_up, color: Colors.green),
-                  SizedBox(width: 10),
-                  Text("120 từ đã học"),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ===== MENU =====
-            buildFullItem(
-              context,
-              Icons.book,
-              "Từ vựng",
-              Colors.orange,
-              const VocabularyScreen(),
-            ),
-
-            Row(
-              children: [
-                buildSmallItem(
-                  context,
-                  Icons.headphones,
-                  "Luyện nghe",
-                  Colors.green,
-                  const ListeningScreen(),
-                ),
-                buildSmallItem(
-                  context,
-                  Icons.edit,
-                  "Bài tập",
-                  Colors.purple,
-                  const QuizScreen(),
-                ),
-              ],
-            ),
-
-            buildFullItem(
-              context,
-              Icons.smart_toy,
-              "AI Assessment",
-              Colors.pink,
-              const AssessmentScreen(),
-            ),
-
-            buildFullItem(
-              context,
-              Icons.map,
-              "Lộ trình học",
-              Colors.blue,
-              LearningPathScreen(score: score),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ===== COURSE LIST =====
-            ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                buildCourseItem(context, "Toeic 450+"),
-                buildCourseItem(context, "Giao tiếp"),
-                buildCourseItem(context, "IELTS"),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // ===== QUOTE =====
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Text(
-                "\"Học tập là chìa khóa thành công\"",
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-      _buildHomeContent(),
-      const FinalTestScreen(),
-      const AccountScreen(),
-    ];
+    final authProvider = context.watch<AuthProvider>();
+    final lessonProvider = context.watch<LessonProvider>();
 
-    final List<String> titles = ["Trang chủ", "Final Test", "Tài khoản"];
+    final user = authProvider.user;
+    final learnedWords = lessonProvider.vocabulary.length;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(titles[_selectedIndex]),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFE3F2FD), Color(0xFFBBDEFB)],
+        title: Text('Welcome, ${user?.username ?? 'User'}'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
             ),
           ),
-        ),
-        actions: [
-          // Nút Đăng xuất
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
-            tooltip: "Đăng xuất",
-            onPressed: () {
-              // Hiển thị xác nhận trước khi đăng xuất
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("Đăng xuất"),
-                  content: const Text("Bạn có chắc muốn đăng xuất không?"),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text("Hủy"),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context); // đóng dialog
-                        // Chuyển về màn hình Login và xóa hết lịch sử
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginScreen()),
-                          (route) => false,
-                        );
-                      },
-                      child: const Text("Đăng xuất",
-                          style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
         ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFE3F2FD), Color(0xFFF3E5F5)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF5B86E5), Color(0xFF36D1DC)],
           ),
         ),
-        child: screens[_selectedIndex],
-      ),
-
-      // ===== BOTTOM NAV =====
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 10,
-            )
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(
-              icon: Icons.home,
-              label: "Home",
-              index: 0,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Card(
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  color: Colors.white.withOpacity(0.95),
+                  child: Padding(
+                    padding: const EdgeInsets.all(22.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade100,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.all(12.0),
+                              child: const Icon(Icons.waving_hand, color: Colors.blue, size: 28),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Hello, ${user?.username ?? 'User'}!',
+                                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Ready to learn more today?',
+                                    style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.book, color: Colors.blue),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Words learned: $learnedWords',
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Choose your path',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.92,
+                    children: [
+                      _buildActionCard(
+                        icon: Icons.school,
+                        title: 'Courses',
+                        color: const Color(0xFF4CAF50),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const CourseScreen()),
+                        ),
+                      ),
+                      _buildActionCard(
+                        icon: Icons.book,
+                        title: 'Vocabulary',
+                        color: const Color(0xFF2196F3),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => VocabularyScreen()),
+                        ),
+                      ),
+                      _buildActionCard(
+                        icon: Icons.fitness_center,
+                        title: 'Exercises',
+                        color: const Color(0xFFFF9800),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const ExerciseScreen()),
+                        ),
+                      ),
+                      _buildActionCard(
+                        icon: Icons.headset,
+                        title: 'Listening',
+                        color: const Color(0xFF9C27B0),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const ListeningScreen()),
+                        ),
+                      ),
+                      _buildActionCard(
+                        icon: Icons.quiz,
+                        title: 'Test',
+                        color: const Color(0xFFF44336),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const QuizScreen()),
+                        ),
+                      ),
+                      _buildActionCard(
+                        icon: Icons.smart_toy,
+                        title: 'AI Assignment',
+                        color: const Color(0xFF009688),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const AIAssignmentScreen()),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            _buildNavItem(
-              icon: Icons.quiz,
-              label: "Test",
-              index: 1,
-            ),
-            _buildNavItem(
-              icon: Icons.person,
-              label: "Account",
-              index: 2,
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildNavItem({
+  Widget _buildActionCard({
     required IconData icon,
-    required String label,
-    required int index,
+    required String title,
+    required Color color,
+    required VoidCallback onTap,
   }) {
-    bool isActive = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () => _onTabTapped(index),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isActive ? Colors.blue : Colors.grey,
-            size: 28,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              color: isActive ? Colors.blue : Colors.grey,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [color.withOpacity(0.95), color.withOpacity(0.7)],
             ),
           ),
-        ],
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 44, color: Colors.white),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  void _showFlashcardMode(BuildContext context) {
+    // TODO: Implement flashcard mode
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Flashcard mode coming soon!')),
     );
   }
 }
