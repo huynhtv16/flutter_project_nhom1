@@ -39,6 +39,7 @@ class LessonController extends Controller
             'vocabulary_ids' => 'nullable|array',
             'phrase_ids' => 'nullable|array',
             'exercise_ids' => 'nullable|array',
+            'pronunciation_ids' => 'nullable|array',
         ]);
 
         $lesson = Lesson::create($validated);
@@ -89,6 +90,7 @@ class LessonController extends Controller
             'vocabulary_ids' => 'nullable|array',
             'phrase_ids' => 'nullable|array',
             'exercise_ids' => 'nullable|array',
+            'pronunciation_ids' => 'nullable|array',
         ]);
 
         $lesson->update($validated);

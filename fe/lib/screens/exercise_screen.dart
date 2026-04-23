@@ -1,22 +1,45 @@
 import 'package:flutter/material.dart';
 import '../models/exercise.dart';
-import '../data/fake_data.dart';
+import '../services/api_service.dart';
 
-class ExerciseScreen extends StatelessWidget {
+class ExerciseScreen extends StatefulWidget {
   const ExerciseScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final exercises = FakeData.exercises;
+  State<ExerciseScreen> createState() => _ExerciseScreenState();
+}
 
+class _ExerciseScreenState extends State<ExerciseScreen> {
+  late Future<List<Exercise>> _exercisesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _exercisesFuture = ApiService.fetchExercises();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Exercises'),
         elevation: 0,
         backgroundColor: Colors.blue.shade600,
       ),
-      body: exercises.isEmpty
-          ? Center(
+      body: FutureBuilder<List<Exercise>>(
+        future: _exercisesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Failed to load exercises: ${snapshot.error}'));
+          }
+
+          final exercises = snapshot.data ?? [];
+
+          if (exercises.isEmpty) {
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -25,18 +48,22 @@ class ExerciseScreen extends StatelessWidget {
                   Text('No exercises available yet', style: Theme.of(context).textTheme.titleMedium),
                 ],
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: exercises.length,
-              itemBuilder: (context, index) {
-                final exercise = exercises[index];
-                return _ExerciseCard(
-                  exercise: exercise,
-                  onTap: () => _showExerciseDetail(context, exercise),
-                );
-              },
-            ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: exercises.length,
+            itemBuilder: (context, index) {
+              final exercise = exercises[index];
+              return _ExerciseCard(
+                exercise: exercise,
+                onTap: () => _showExerciseDetail(context, exercise),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -255,8 +282,39 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       return _buildResultScreen();
     }
 
+    // Handle exercises with no questions to avoid divide-by-zero and range errors
+    if (widget.exercise.questions.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.exercise.title),
+          elevation: 0,
+          backgroundColor: Colors.blue.shade600,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 72, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                const Text('This exercise has no questions.', style: TextStyle(fontSize: 16)),
+                const SizedBox(height: 8),
+                const Text('Please select another exercise or contact the administrator.', textAlign: TextAlign.center),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Back'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final question = widget.exercise.questions[currentQuestionIndex];
-    final progress = (currentQuestionIndex + 1) / widget.exercise.questions.length;
+    final progress = (currentQuestionIndex + 1) / (widget.exercise.questions.length == 0 ? 1 : widget.exercise.questions.length);
 
     return Scaffold(
       appBar: AppBar(

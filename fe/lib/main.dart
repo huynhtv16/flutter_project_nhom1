@@ -5,6 +5,8 @@ import 'providers/auth_provider.dart';
 import 'providers/lesson_provider.dart';
 import 'providers/quiz_provider.dart';
 import 'providers/phrase_provider.dart';
+import 'providers/topic_provider.dart';
+import 'providers/reward_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/lesson_list_screen.dart';
@@ -15,6 +17,8 @@ import 'screens/course_screen.dart';
 import 'screens/exercise_screen.dart';
 import 'screens/listening_screen.dart';
 import 'screens/ai_assignment_screen.dart';
+import 'screens/topics_screen.dart';
+import 'screens/rewards_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,6 +48,8 @@ class MyApp extends StatelessWidget {
           create: (context) => AppState(context.read<AuthProvider>()),
           update: (context, auth, previous) => previous ?? AppState(auth),
         ),
+        ChangeNotifierProvider(create: (_) => TopicProvider()),
+        ChangeNotifierProvider(create: (_) => RewardProvider()),
       ],
       child: MaterialApp(
         title: 'English Learning App',
@@ -54,6 +60,8 @@ class MyApp extends StatelessWidget {
         home: const AuthWrapper(),
         routes: {
           '/home': (context) => const HomeScreen(),
+          '/topics': (context) => TopicsScreen(),
+          '/rewards': (context) => RewardsScreen(),
           '/lessons': (context) => const LessonListScreen(),
           '/quiz': (context) => const QuizScreen(),
           '/profile': (context) => const ProfileScreen(),

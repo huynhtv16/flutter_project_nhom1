@@ -10,4 +10,13 @@ class Course {
     required this.description,
     required this.lessons,
   });
+
+  factory Course.fromJson(Map<String, dynamic> json) {
+    return Course(
+      id: json['id'].toString(),
+      title: json['title'],
+      description: json['description'] ?? '',
+      lessons: json['lessons'],
+    );
+  }
 }

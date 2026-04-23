@@ -13,12 +13,14 @@ class Lesson extends Model
         'vocabulary_ids',
         'phrase_ids',
         'exercise_ids',
+        'pronunciation_ids',
     ];
 
     protected $casts = [
         'vocabulary_ids' => 'array',
         'phrase_ids' => 'array',
         'exercise_ids' => 'array',
+        'pronunciation_ids' => 'array',
     ];
 
     public function vocabulary()

@@ -1,9 +1,17 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/lesson.dart';
+import '../models/course.dart';
 import '../models/vocabulary.dart';
 import '../models/quiz.dart';
 import '../models/phrase.dart';
+import '../models/exercise.dart';
+import '../models/pronunciation_guide.dart';
+import '../models/listening_item.dart';
+import '../models/topic.dart';
+import '../models/flashcard.dart';
+import '../models/reward.dart';
+import '../models/learning_path.dart';
 
 class ApiService {
   static const String baseUrl = 'http://127.0.0.1:8000/api'; // Laravel API URL
@@ -58,6 +66,46 @@ class ApiService {
     }
   }
 
+  // Courses
+  static Future<List<Course>> fetchCourses({String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/courses'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Course.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load courses');
+    }
+  }
+
+  // Listening Items
+  static Future<List<ListeningItem>> fetchListeningItems({String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/listening-items'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => ListeningItem.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load listening items');
+    }
+  }
+
   // Lessons
   static Future<List<Lesson>> fetchLessons({String? token}) async {
     final headers = {'Content-Type': 'application/json'};
@@ -96,6 +144,47 @@ class ApiService {
     }
   }
 
+  // Exercises
+  static Future<List<Exercise>> fetchExercises({String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/exercises'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Exercise.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load exercises');
+    }
+  }
+
+  // Pronunciation Guides
+  static Future<List<PronunciationGuide>> fetchPronunciationGuides({String? token, String? lessonId}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    final uri = lessonId != null
+        ? Uri.parse('$baseUrl/pronunciation-guides?lesson_id=$lessonId')
+        : Uri.parse('$baseUrl/pronunciation-guides');
+
+    final response = await http.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => PronunciationGuide.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load pronunciation guides');
+    }
+  }
+
   // Vocabulary
   static Future<List<Vocabulary>> fetchVocabulary({String? lessonId, String? token}) async {
     final headers = {'Content-Type': 'application/json'};
@@ -116,6 +205,61 @@ class ApiService {
     } else {
       throw Exception('Failed to load vocabulary');
     }
+  }
+
+  // Topics & Flashcards
+  static Future<List<dynamic>> fetchTopics({String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.get(Uri.parse('$baseUrl/topics'), headers: headers);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load topics');
+    }
+  }
+
+  static Future<List<dynamic>> fetchFlashcards({int? topicId, String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final uri = topicId != null ? Uri.parse('$baseUrl/flashcards?topic_id=$topicId') : Uri.parse('$baseUrl/flashcards');
+    final response = await http.get(uri, headers: headers);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load flashcards');
+    }
+  }
+
+  // Rewards
+  static Future<List<dynamic>> fetchRewards({String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.get(Uri.parse('$baseUrl/rewards'), headers: headers);
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception('Failed to load rewards');
+  }
+
+  static Future<Map<String, dynamic>> claimReward(int rewardId, {String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.post(Uri.parse('$baseUrl/rewards/$rewardId/claim'), headers: headers);
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception('Failed to claim reward');
+  }
+
+  // Learning paths
+  static Future<List<dynamic>> fetchLearningPaths({String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.get(Uri.parse('$baseUrl/learning-paths'), headers: headers);
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception('Failed to load learning paths');
   }
 
   // Phrases

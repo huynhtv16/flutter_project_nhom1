@@ -12,12 +12,14 @@ class UserProgress extends Model
         'quiz_scores',
         'total_score',
         'favorites',
+        'claimed_rewards',
     ];
 
     protected $casts = [
         'learned_words' => 'array',
         'quiz_scores' => 'array',
         'favorites' => 'array',
+        'claimed_rewards' => 'array',
     ];
 
     public function user()
