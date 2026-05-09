@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/exercise.dart';
+import '../models/course.dart';
 import '../services/api_service.dart';
 
 class ExerciseScreen extends StatefulWidget {
@@ -11,11 +12,17 @@ class ExerciseScreen extends StatefulWidget {
 
 class _ExerciseScreenState extends State<ExerciseScreen> {
   late Future<List<Exercise>> _exercisesFuture;
+  List<Course> _courses = [];
 
   @override
   void initState() {
     super.initState();
     _exercisesFuture = ApiService.fetchExercises();
+    ApiService.fetchCourses().then((list) {
+      setState(() {
+        _courses = list;
+      });
+    }).catchError((_) {});
   }
 
   @override
@@ -26,6 +33,87 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         elevation: 0,
         backgroundColor: Colors.blue.shade600,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final titleCtrl = TextEditingController();
+          final descCtrl = TextEditingController();
+          final typeCtrl = TextEditingController(text: 'matching');
+          final difficultyCtrl = TextEditingController(text: '1');
+          final durationCtrl = TextEditingController(text: '5');
+          final qTextCtrl = TextEditingController();
+          final qOptionsCtrl = TextEditingController();
+          final qCorrectCtrl = TextEditingController(text: '0');
+          int? selectedCourseId;
+
+          final result = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Create Exercise'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(controller: titleCtrl, decoration: const InputDecoration(labelText: 'Title')),
+                    TextField(controller: descCtrl, decoration: const InputDecoration(labelText: 'Description')),
+                    TextField(controller: typeCtrl, decoration: const InputDecoration(labelText: 'Type')),
+                    TextField(controller: difficultyCtrl, decoration: const InputDecoration(labelText: 'Difficulty (1-5)')),
+                    TextField(controller: durationCtrl, decoration: const InputDecoration(labelText: 'Duration (minutes)')),
+                    const SizedBox(height: 8),
+                    if (_courses.isNotEmpty)
+                      DropdownButtonFormField<int>(
+                        decoration: const InputDecoration(labelText: 'Course (optional)'),
+                        items: _courses.map((c) => DropdownMenuItem(value: int.tryParse(c.id) ?? 0, child: Text(c.title))).toList(),
+                        onChanged: (v) => selectedCourseId = v,
+                      ),
+                    const SizedBox(height: 8),
+                    const Text('First question (single)'),
+                    TextField(controller: qTextCtrl, decoration: const InputDecoration(labelText: 'Question')),
+                    TextField(controller: qOptionsCtrl, decoration: const InputDecoration(labelText: 'Options (comma separated)')),
+                    TextField(controller: qCorrectCtrl, decoration: const InputDecoration(labelText: 'Correct option index (0-based)')),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+                ElevatedButton(
+                  onPressed: () async {
+                    final title = titleCtrl.text.trim();
+                    if (title.isEmpty) return;
+                    final options = qOptionsCtrl.text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+                    final question = {
+                      'id': 1,
+                      'question': qTextCtrl.text.trim(),
+                      'options': options,
+                      'correctIndex': int.tryParse(qCorrectCtrl.text.trim()) ?? 0,
+                      'explanation': '',
+                      'hint': '',
+                    };
+                    final payload = {
+                      'title': title,
+                      'description': descCtrl.text.trim(),
+                      'type': typeCtrl.text.trim(),
+                      'difficulty': int.tryParse(difficultyCtrl.text.trim()) ?? 1,
+                      'duration': int.tryParse(durationCtrl.text.trim()) ?? 5,
+                      'questions': [question],
+                    if (selectedCourseId != null) 'course_id': selectedCourseId,
+                    };
+
+                    await ApiService.createExercise(payload);
+                    setState(() {
+                      _exercisesFuture = ApiService.fetchExercises();
+                    });
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            ),
+          );
+          if (result == true) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exercise created')));
+        },
+        child: const Icon(Icons.add),
+      ),
+
       body: FutureBuilder<List<Exercise>>(
         future: _exercisesFuture,
         builder: (context, snapshot) {

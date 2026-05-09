@@ -14,6 +14,7 @@ class Lesson extends Model
         'phrase_ids',
         'exercise_ids',
         'pronunciation_ids',
+        'course_id',
     ];
 
     protected $casts = [
@@ -41,5 +42,10 @@ class Lesson extends Model
     public function quizzes()
     {
         return $this->hasMany(Quiz::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
     }
 }

@@ -13,7 +13,12 @@ class ExerciseController extends Controller
      */
     public function index()
     {
-        $exercises = Exercise::all()->map(function ($ex) {
+        $query = Exercise::query();
+        if (request()->has('course_id')) {
+            $query->where('course_id', request('course_id'));
+        }
+
+        $exercises = $query->get()->map(function ($ex) {
             $qs = $ex->questions;
             if (is_string($qs)) {
                 $decoded = json_decode($qs, true);
@@ -34,9 +39,10 @@ class ExerciseController extends Controller
             'title' => 'required|string',
             'description' => 'nullable|string',
             'type' => 'required|string',
-            'difficulty' => 'required|integer|min:1|max:5',
-            'duration' => 'required|integer|min:1',
+            'difficulty' => 'required',
+            'duration' => 'nullable|integer|min:1',
             'questions' => 'required|array',
+            'course_id' => 'nullable|integer|exists:courses,id',
         ]);
 
         $exercise = Exercise::create($validated);
@@ -69,9 +75,10 @@ class ExerciseController extends Controller
             'title' => 'required|string',
             'description' => 'nullable|string',
             'type' => 'required|string',
-            'difficulty' => 'required|integer|min:1|max:5',
-            'duration' => 'required|integer|min:1',
+            'difficulty' => 'required',
+            'duration' => 'nullable|integer|min:1',
             'questions' => 'required|array',
+            'course_id' => 'nullable|integer|exists:courses,id',
         ]);
 
         $exercise->update($validated);

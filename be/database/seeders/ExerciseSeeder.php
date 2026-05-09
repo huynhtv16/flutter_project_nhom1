@@ -12,6 +12,10 @@ class ExerciseSeeder extends Seeder
      */
     public function run(): void
     {
+        $daily = \App\Models\Course::where('title', 'Daily Conversation')->first();
+        $business = \App\Models\Course::where('title', 'Business English')->first();
+        $listening = \App\Models\Course::where('title', 'Listening Essentials')->first();
+
         \App\Models\Exercise::create([
             'title' => 'Basic Matching',
             'description' => 'Match the words with their meanings.',
@@ -36,6 +40,7 @@ class ExerciseSeeder extends Seeder
                     'hint' => 'Opposite of walk slowly',
                 ],
             ],
+            'course_id' => $daily ? $daily->id : null,
         ]);
 
         \App\Models\Exercise::create([
@@ -54,6 +59,7 @@ class ExerciseSeeder extends Seeder
                     'hint' => 'Present tense',
                 ],
             ],
+            'course_id' => $business ? $business->id : ($listening ? $listening->id : null),
         ]);
     }
 }

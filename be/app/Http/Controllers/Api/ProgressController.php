@@ -80,7 +80,6 @@ class ProgressController extends Controller
     {
         $user = $request->user();
         $progress = $user->progress;
-
         $stats = [
             'total_learned_words' => count($progress->learned_words ?? []),
             'total_quiz_attempts' => $user->quizAttempts()->count(),
@@ -89,6 +88,32 @@ class ProgressController extends Controller
             'total_score' => $progress->total_score ?? 0,
             'favorite_words_count' => count($progress->favorites ?? []),
         ];
+
+        // Per-course breakdown (based on exercises linked to course and quizzes via lessons)
+        $perCourse = [];
+        $courses = \App\Models\Course::all();
+        foreach ($courses as $course) {
+            // Exercise attempts for this course
+            $exerciseAttempts = $user->exerciseAttempts()->whereHas('exercise', function ($q) use ($course) {
+                $q->where('course_id', $course->id);
+            });
+
+            $quizAttempts = $user->quizAttempts()->whereHas('quiz', function ($q) use ($course) {
+                $q->whereHas('lesson', function ($l) use ($course) {
+                    $l->where('course_id', $course->id);
+                });
+            });
+
+            $perCourse[$course->id] = [
+                'course_title' => $course->title,
+                'exercise_attempts' => $exerciseAttempts->count(),
+                'avg_exercise_score' => $exerciseAttempts->avg('score') ?? 0,
+                'quiz_attempts' => $quizAttempts->count(),
+                'avg_quiz_score' => $quizAttempts->avg('score') ?? 0,
+            ];
+        }
+
+        $stats['per_course'] = $perCourse;
 
         return response()->json($stats);
     }

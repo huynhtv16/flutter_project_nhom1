@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../services/api_service.dart';
 import 'lesson_list_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 
 class CourseScreen extends StatefulWidget {
   const CourseScreen({Key? key}) : super(key: key);
@@ -12,11 +14,19 @@ class CourseScreen extends StatefulWidget {
 
 class _CourseScreenState extends State<CourseScreen> {
   late Future<List<Course>> _coursesFuture;
+  Map<String, dynamic>? _stats;
 
   @override
   void initState() {
     super.initState();
     _coursesFuture = ApiService.fetchCourses();
+    // fetch stats if logged in
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        ApiService.fetchProgressStats(token: token).then((s) => setState(() => _stats = s)).catchError((_) {});
+      }
+    });
   }
 
   @override
@@ -62,6 +72,16 @@ class _CourseScreenState extends State<CourseScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('${course.lessons} lessons', style: const TextStyle(color: Colors.grey)),
+                          if (_stats == null)
+                            TextButton(onPressed: () {}, child: const Text('Sign in to see progress'))
+                          else
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text('Exercises: ${_stats!['per_course']?['${int.tryParse(course.id) ?? 0}']?['exercise_attempts'] ?? 0}'),
+                                Text('Quizzes: ${_stats!['per_course']?['${int.tryParse(course.id) ?? 0}']?['quiz_attempts'] ?? 0}'),
+                              ],
+                            ),
                           ElevatedButton(
                             onPressed: () => Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => const LessonListScreen()),

@@ -11,4 +11,19 @@ class Course extends Model
         'description',
         'lessons',
     ];
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
+
+    public function exercises()
+    {
+        return $this->hasMany(Exercise::class);
+    }
+
+    public function listeningItems()
+    {
+        return $this->hasMany(ListeningItem::class);
+    }
 }

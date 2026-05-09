@@ -17,4 +17,16 @@ class TopicProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> createTopic(String title, {String? description}) async {
+    loading = true;
+    notifyListeners();
+    try {
+      await ApiService.createTopic(title, description: description);
+      await loadTopics();
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
+  }
 }

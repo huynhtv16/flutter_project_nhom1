@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import '../providers/lesson_provider.dart';
+import '../services/api_service.dart';
 import '../models/vocabulary.dart';
 import '../widgets/vocabulary_card.dart';
 
@@ -71,6 +72,55 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
         title: const Text('Vocabulary'),
         elevation: 0,
         backgroundColor: Colors.blue.shade600,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final wordCtrl = TextEditingController();
+          final phoneticCtrl = TextEditingController();
+          final meaningCtrl = TextEditingController();
+          final examplesCtrl = TextEditingController();
+
+          final result = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Add Vocabulary'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(controller: wordCtrl, decoration: const InputDecoration(labelText: 'Word')),
+                    TextField(controller: phoneticCtrl, decoration: const InputDecoration(labelText: 'Phonetic')),
+                    TextField(controller: meaningCtrl, decoration: const InputDecoration(labelText: 'Meaning')),
+                    TextField(controller: examplesCtrl, decoration: const InputDecoration(labelText: 'Examples (comma separated)')),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+                ElevatedButton(
+                  onPressed: () async {
+                    final word = wordCtrl.text.trim();
+                    if (word.isEmpty) return;
+                    final payload = {
+                      'word': word,
+                      'phonetic': phoneticCtrl.text.trim(),
+                      'meaning': meaningCtrl.text.trim(),
+                      'examples': examplesCtrl.text.trim().isEmpty ? [] : examplesCtrl.text.split(',').map((s) => s.trim()).toList(),
+                    };
+                    await ApiService.createVocabulary(payload);
+                    // reload vocabulary via LessonProvider
+                    final lessonProvider = Provider.of<LessonProvider>(context, listen: false);
+                    await lessonProvider.loadVocabularyForLesson(widget.lessonId ?? '');
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text('Add'),
+                ),
+              ],
+            ),
+          );
+          if (result == true) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vocabulary added')));
+        },
+        child: const Icon(Icons.add),
       ),
       body: DefaultTabController(
         length: categories.length,

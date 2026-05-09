@@ -13,7 +13,12 @@ class ListeningItemController extends Controller
      */
     public function index()
     {
-        return response()->json(ListeningItem::all());
+        $query = ListeningItem::query();
+        if (request()->has('course_id')) {
+            $query->where('course_id', request('course_id'));
+        }
+
+        return response()->json($query->get());
     }
 
     /**
@@ -21,7 +26,15 @@ class ListeningItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'text' => 'required|string',
+            'course_id' => 'nullable|integer|exists:courses,id',
+        ]);
+
+        $item = ListeningItem::create($validated);
+
+        return response()->json($item, 201);
     }
 
     /**
@@ -37,7 +50,17 @@ class ListeningItemController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $item = ListeningItem::findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'text' => 'required|string',
+            'course_id' => 'nullable|integer|exists:courses,id',
+        ]);
+
+        $item->update($validated);
+
+        return response()->json($item);
     }
 
     /**
@@ -45,6 +68,9 @@ class ListeningItemController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $item = ListeningItem::findOrFail($id);
+        $item->delete();
+
+        return response()->json(['message' => 'Listening item deleted']);
     }
 }

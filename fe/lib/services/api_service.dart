@@ -106,6 +106,42 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>> createListeningItem(Map<String, dynamic> payload, {String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/listening-items'),
+      headers: headers,
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 201) return jsonDecode(response.body);
+    throw Exception('Failed to create listening item');
+  }
+
+  static Future<Map<String, dynamic>> updateListeningItem(int id, Map<String, dynamic> payload, {String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/listening-items/$id'),
+      headers: headers,
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception('Failed to update listening item');
+  }
+
+  static Future<void> deleteListeningItem(int id, {String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.delete(Uri.parse('$baseUrl/listening-items/$id'), headers: headers);
+    if (response.statusCode != 200) throw Exception('Failed to delete listening item');
+  }
+
   // Lessons
   static Future<List<Lesson>> fetchLessons({String? token}) async {
     final headers = {'Content-Type': 'application/json'};
@@ -342,6 +378,15 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>> fetchProgressStats({String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.get(Uri.parse('$baseUrl/progress/stats'), headers: headers);
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception('Failed to load progress stats');
+  }
+
   static Future<Map<String, dynamic>> addLearnedWord(int wordId, {String? token}) async {
     final headers = {'Content-Type': 'application/json'};
     if (token != null) {
@@ -378,5 +423,50 @@ class ApiService {
     } else {
       throw Exception('Failed to toggle favorite');
     }
+  }
+
+  // Create topic
+  static Future<Map<String, dynamic>> createTopic(String title, {String? description, String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/topics'),
+      headers: headers,
+      body: jsonEncode({'title': title, 'description': description}),
+    );
+
+    if (response.statusCode == 201) return jsonDecode(response.body);
+    throw Exception('Failed to create topic');
+  }
+
+  // Create vocabulary
+  static Future<Map<String, dynamic>> createVocabulary(Map<String, dynamic> payload, {String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/vocabulary'),
+      headers: headers,
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 201) return jsonDecode(response.body);
+    throw Exception('Failed to create vocabulary');
+  }
+
+  // Create exercise
+  static Future<Map<String, dynamic>> createExercise(Map<String, dynamic> payload, {String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/exercises'),
+      headers: headers,
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 201) return jsonDecode(response.body);
+    throw Exception('Failed to create exercise');
   }
 }

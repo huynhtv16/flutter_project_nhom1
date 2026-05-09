@@ -13,6 +13,7 @@ class Exercise extends Model
         'difficulty',
         'duration',
         'questions',
+        'course_id',
     ];
 
     protected $casts = [
@@ -22,5 +23,10 @@ class Exercise extends Model
     public function attempts()
     {
         return $this->hasMany(ExerciseAttempt::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
     }
 }

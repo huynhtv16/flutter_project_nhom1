@@ -54,8 +54,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'English Learning App',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.indigo,
           visualDensity: VisualDensity.adaptivePlatformDensity,
+          scaffoldBackgroundColor: Colors.grey[50],
+          textTheme: Theme.of(context).textTheme.apply(bodyColor: Colors.black87),
         ),
         home: const AuthWrapper(),
         routes: {
